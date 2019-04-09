@@ -25,29 +25,22 @@ import java.util.LinkedList;
  */
 public class ThreadPool {
     private int threadPoolLimit;
-    private int numberOfConnections;
     private WorkQueue workQueue;
     private Thread[] workerThreads;
 
     public ThreadPool(int threadPoolLimit) {
         this.threadPoolLimit = threadPoolLimit;
         this.workQueue = new WorkQueue();
-        this.numberOfConnections = 0;
         workerThreads = new Thread[threadPoolLimit];
 
-        for (int i = 0; i < this.threadPoolLimit; i++)
+        for (int i = 0; i < this.threadPoolLimit; i++){
             workerThreads[i] = new Thread(new WorkerThread());
-
-
+            workerThreads[i].start();
+        }
     }
 
     public void add(Connection newConnection) {
         workQueue.addTask(newConnection);
-
-//        if(workerThreads[numberOfConnections] != null && !workerThreads[numberOfConnections].isAlive()){
-//            workQueue.runnableList.remove(numberOfConnections);
-            workerThreads[numberOfConnections].start();
-//        }
     }
 
     /**
@@ -67,16 +60,19 @@ public class ThreadPool {
         }
 
         private synchronized void addTask(Runnable task) {
-//            if(numberOfConnections <= threadPoolLimit){
-                runnableList.add(task);
-                numberOfConnections = runnableList.size() - 1;
-                System.err.println("asdfasd: "+ numberOfConnections);
-//            }
-//            return false;
+            runnableList.add(task);
+            notify();
         }
 
-        private Runnable getTask(int indexOfTask) {
-            return runnableList.get(indexOfTask);
+        private synchronized Runnable getTask() {
+            try {
+                while (runnableList.isEmpty()) {
+                    wait();
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return runnableList.remove();
         }
     }
 
@@ -86,7 +82,7 @@ public class ThreadPool {
      */
     private class WorkerThread implements Runnable {
         public void run() {
-            workQueue.getTask(numberOfConnections).run();
+            workQueue.getTask().run();
         }
     }
 }
