@@ -18,13 +18,16 @@ public class EchoServer {
     public static void main(String[] args) throws IOException {
         System.out.println("Server Started.");
         ServerSocket serverSocket = new ServerSocket(PORT);
-        ThreadPool threadPool = new ThreadPool(3);
+        ThreadPool threadPool = new ThreadPool(2);
         System.out.println("Awaiting clients.");
 
         while (true) {
-            try (Socket client = serverSocket.accept()) {
+            try{
+                Socket client = serverSocket.accept();
                 //adding client socket to the threadPool
                 threadPool.add(new Connection(client));//make this a if statement
+            } catch (Exception e){
+                System.err.println("Exception the the EchoServer Class. Exception:" + e);
             }
         }
     }
