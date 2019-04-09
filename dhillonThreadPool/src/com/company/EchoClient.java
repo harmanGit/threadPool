@@ -28,15 +28,20 @@ public class EchoClient {
         try {
             serverSocket = new Socket(HOST, EchoServer.getPort());
             System.out.println("Echo Client Connected.");
-//            System.err.println("server socket added: " + serverSocket.getPort()); //debugging
+            System.err.println("server socket added: " + serverSocket.getPort()); //debugging
             serverWriter = new PrintWriter(serverSocket.getOutputStream(), true);
             serverScanner = new Scanner(serverSocket.getInputStream());
 
             while(sn.hasNextLine()){
                 messageToSend = sn.nextLine();
+
                 System.out.println("Client: "+ messageToSend);//printing out user input
                 serverWriter.println(messageToSend);//sending the server the message
                 System.out.println(serverScanner.nextLine());//printing out server input
+                if(messageToSend.equals(".")){
+                    serverSocket.close();
+                    return;
+                }
             }
         } catch (IOException | NoSuchElementException e){
             System.err.println("Exception the the Connection Class. Exception:" + e);
