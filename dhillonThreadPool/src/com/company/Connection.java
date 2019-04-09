@@ -18,7 +18,7 @@ public class Connection implements Runnable {
 
     public Connection(Socket socket) {
         this.socket = socket;
-//        System.err.println("Connection Active: " + socket.getPort());//Debugging
+        System.err.println("Connection Active: " + socket.getPort());//Debugging
     }
 
     public void run() {
@@ -31,9 +31,14 @@ public class Connection implements Runnable {
 
             while(clientScanner.hasNextLine()){
                 message = clientScanner.nextLine();//Getting the message from the client
-//                System.err.println("message: " + message);//Debugging
+                System.err.println("message: " + message);//Debugging
                 clientWriter.println("Server: " + message);//sending the client the echo message back
-           }
+
+                if(message.equals(".")){
+                    socket.close();
+                    return;
+                }
+            }
         } catch(IOException e){
             System.err.println("Exception the the Connection Class. Exception:" + e);
         }
