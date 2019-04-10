@@ -1,6 +1,8 @@
 package com.harmanDhillon.threadPoolLocked;
 
 import java.util.LinkedList;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Nested Class:
@@ -27,13 +29,15 @@ public class ThreadPool {
     private int threadPoolLimit;
     private WorkQueue workQueue;
     private Thread[] workerThreads;
-    private int threadCount;
+    private ReentrantLock reentrantLock;
+    private Condition condition;
 
     public ThreadPool(int threadPoolLimit) {
         this.threadPoolLimit = threadPoolLimit;
         this.workQueue = new WorkQueue();
         this.workerThreads = new Thread[threadPoolLimit];
-        this.threadCount = 0;
+        this.reentrantLock = new ReentrantLock();
+        this.condition = reentrantLock.newCondition();
 
         for (int i = 0; i < this.threadPoolLimit; i++) {
             workerThreads[i] = new Thread(new WorkerThread());
@@ -41,7 +45,7 @@ public class ThreadPool {
         }
     }
 
-    public synchronized void add(Connection newConnection) {
+    public void add(Connection newConnection) {
         workQueue.addTask(newConnection);
     }
 
@@ -61,18 +65,23 @@ public class ThreadPool {
             this.runnableList = new LinkedList<>();
         }
 
-        private synchronized void addTask(Runnable task) {
+        private void addTask(Runnable task) {
+            reentrantLock.lock();
             runnableList.add(task);
-            notifyAll();
+            condition.signalAll();
+            reentrantLock.unlock();
         }
 
-        private synchronized Runnable getTask() {
+        private Runnable getTask() {
             try {
+                reentrantLock.lock();
                 while (runnableList.isEmpty()) {
-                    wait();
+                    condition.await();
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            } finally {
+                reentrantLock.unlock();
             }
             return runnableList.remove();
         }
