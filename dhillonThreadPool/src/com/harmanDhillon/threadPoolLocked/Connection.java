@@ -1,4 +1,4 @@
-package com.company;
+package com.harmanDhillon.threadPoolLocked;
 
 import java.io.IOException;
 import java.io.PrintWriter;

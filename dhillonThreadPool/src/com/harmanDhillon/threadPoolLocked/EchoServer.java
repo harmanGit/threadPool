@@ -1,4 +1,4 @@
-package com.company;
+package com.harmanDhillon.threadPoolLocked;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -11,6 +11,7 @@ import java.net.Socket;
  * <p>
  * Created by Harman Dhillon on 4/8/2019.
  */
+@SuppressWarnings("ALL")
 public class EchoServer {
 
     private static final int PORT = 1111;
