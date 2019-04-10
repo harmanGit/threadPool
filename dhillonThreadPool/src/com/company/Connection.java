@@ -33,11 +33,6 @@ public class Connection implements Runnable {
                 message = clientScanner.nextLine();//Getting the message from the client
                 System.err.println("message: " + message);//Debugging
                 clientWriter.println("Server: " + message);//sending the client the echo message back
-
-                if(message.equals(".")){
-                    socket.close();
-                    return;
-                }
             }
         } catch(IOException e){
             System.err.println("Exception the the Connection Class. Exception:" + e);

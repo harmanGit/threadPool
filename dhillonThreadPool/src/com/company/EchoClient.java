@@ -11,7 +11,7 @@ import java.util.Scanner;
  * of text from the keyboard, writes it to the server and then writes the
  * server's response to the console. This continues until the user enters a
  * single period, with terminates the connection.
- *
+ * <p>
  * Created by Harman Dhillon on 4/8/2019.
  */
 public class EchoClient {
@@ -28,22 +28,23 @@ public class EchoClient {
         try {
             serverSocket = new Socket(HOST, EchoServer.getPort());
             System.out.println("Echo Client Connected.");
-            System.err.println("server socket added: " + serverSocket.getPort()); //debugging
+            System.err.println("server socket added: " + serverSocket.getPort() + "\n"); //debugging
             serverWriter = new PrintWriter(serverSocket.getOutputStream(), true);
             serverScanner = new Scanner(serverSocket.getInputStream());
 
-            while(sn.hasNextLine()){
+            do {
+                System.out.print("Client: ");//init output
                 messageToSend = sn.nextLine();
-
-                System.out.println("Client: "+ messageToSend);//printing out user input
+                //System.out.print("Client: "+ messageToSend);//printing out user input
                 serverWriter.println(messageToSend);//sending the server the message
                 System.out.println(serverScanner.nextLine());//printing out server input
-                if(messageToSend.equals(".")){
-                    serverSocket.close();
+                if (messageToSend.equals(".")) {
                     return;
                 }
-            }
-        } catch (IOException | NoSuchElementException e){
+            } while (true);
+
+
+        } catch (IOException | NoSuchElementException e) {
             System.err.println("Exception the the Connection Class. Exception:" + e);
         }
     }

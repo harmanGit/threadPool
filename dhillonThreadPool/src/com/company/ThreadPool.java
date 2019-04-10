@@ -27,19 +27,21 @@ public class ThreadPool {
     private int threadPoolLimit;
     private WorkQueue workQueue;
     private Thread[] workerThreads;
+    private int threadCount;
 
     public ThreadPool(int threadPoolLimit) {
         this.threadPoolLimit = threadPoolLimit;
         this.workQueue = new WorkQueue();
-        workerThreads = new Thread[threadPoolLimit];
+        this.workerThreads = new Thread[threadPoolLimit];
+        this.threadCount = 0;
 
-        for (int i = 0; i < this.threadPoolLimit; i++){
+        for (int i = 0; i < this.threadPoolLimit; i++) {
             workerThreads[i] = new Thread(new WorkerThread());
             workerThreads[i].start();
         }
     }
 
-    public void add(Connection newConnection) {
+    public synchronized void add(Connection newConnection) {
         workQueue.addTask(newConnection);
     }
 
@@ -61,7 +63,7 @@ public class ThreadPool {
 
         private synchronized void addTask(Runnable task) {
             runnableList.add(task);
-            notify();
+            notifyAll();
         }
 
         private synchronized Runnable getTask() {
@@ -82,7 +84,8 @@ public class ThreadPool {
      */
     private class WorkerThread implements Runnable {
         public void run() {
-            workQueue.getTask().run();
+            while (true)
+                workQueue.getTask().run();
         }
     }
 }
