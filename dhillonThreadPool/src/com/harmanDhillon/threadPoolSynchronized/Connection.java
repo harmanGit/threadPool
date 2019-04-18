@@ -14,25 +14,31 @@ import java.util.Scanner;
  * Created by Harman Dhillon on 4/8/2019.
  */
 public class Connection implements Runnable {
-    private Socket socket;
+    private Socket socket; //stores the client socket
 
+    /**
+     * Constructor for the connection, requires a socket
+     * which is meant to be the client socket.
+     * @param socket <code>Socket</code> client socket
+     */
     public Connection(Socket socket) {
         this.socket = socket;
-        System.err.println("Connection Active: " + socket.getPort());//Debugging
     }
 
+    /**
+     * This method meant to be used when running a thread, this contains the echo feature of the program.
+     */
     public void run() {
-        String message;
-        Scanner clientScanner;
-        PrintWriter clientWriter;
+        String message;//message from the client
+        Scanner clientScanner;//used for receiving input from the client
+        PrintWriter clientWriter;//used for output back to the client
         try{
-            clientScanner = new Scanner(socket.getInputStream());
-            clientWriter = new PrintWriter(socket.getOutputStream(), true);
+            clientScanner = new Scanner(socket.getInputStream());//scanner created based off the client socket
+            clientWriter = new PrintWriter(socket.getOutputStream(), true);//writer created based off the client socket
 
             while(clientScanner.hasNextLine()){
                 message = clientScanner.nextLine();//Getting the message from the client
-                System.err.println("message: " + message);//Debugging
-                clientWriter.println("Server: " + message);//sending the client the echo message back
+                clientWriter.println("Server: " + message);//sending the client the "echo message back"
             }
         } catch(IOException e){
             System.err.println("Exception the the Connection Class. Exception:" + e);

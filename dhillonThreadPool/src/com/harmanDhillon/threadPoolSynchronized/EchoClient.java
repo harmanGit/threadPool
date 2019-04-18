@@ -20,30 +20,28 @@ public class EchoClient {
         System.out.println("Starting Echo Client.");
         Scanner sn = new Scanner(System.in);
         final String HOST = "127.0.0.1";
-        String messageToSend = "";
-        PrintWriter serverWriter;
-        Scanner serverScanner;
-        Socket serverSocket;
+        String messageToSend = "";//message the user wants to send to the server, so it can be echoed back
+        PrintWriter serverWriter;//writer is used to send a message to the server
+        Scanner serverScanner;//scanner is used to get a message back from the server
+        Socket serverSocket;//socket for the server
 
         try {
+            //getting a copy of the server socket, based off local host and port number
             serverSocket = new Socket(HOST, EchoServer.getPort());
             System.out.println("Echo Client Connected.");
-            System.err.println("server socket added: " + serverSocket.getPort() + "\n"); //debugging
             serverWriter = new PrintWriter(serverSocket.getOutputStream(), true);
             serverScanner = new Scanner(serverSocket.getInputStream());
 
             do {
-                System.out.print("Client: ");//init output
-                messageToSend = sn.nextLine();
-                //System.out.print("Client: "+ messageToSend);//printing out user input
+                System.out.print("Client: ");//Indictor for the client
+                messageToSend = sn.nextLine();//getting and storing user input from the terminal
                 serverWriter.println(messageToSend);//sending the server the message
                 System.out.println(serverScanner.nextLine());//printing out server input
-                if (messageToSend.equals(".")) {
+                if (messageToSend.equals(".")) {//ending the client if a "." is entered
+                    serverSocket.close();//closing socket
                     return;
                 }
             } while (true);
-
-
         } catch (IOException | NoSuchElementException e) {
             System.err.println("Exception the the Connection Class. Exception:" + e);
         }

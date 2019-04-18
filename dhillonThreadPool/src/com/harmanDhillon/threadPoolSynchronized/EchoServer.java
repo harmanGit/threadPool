@@ -17,21 +17,26 @@ public class EchoServer {
 
     public static void main(String[] args) throws IOException {
         System.out.println("Server Started.");
-        ServerSocket serverSocket = new ServerSocket(PORT);
+        ServerSocket serverSocket = new ServerSocket(PORT);//creating the actual server socket itself
+        //ThreadPool represents the number of clients that can connect to the server
         ThreadPool threadPool = new ThreadPool(3);
-        System.out.println("Awaiting clients.");
+        System.out.println("Thread Pool Created.");
+        System.out.println("Awaiting Clients.");
 
-        while (true) {
-            try {
-                Socket client = serverSocket.accept();
-                //adding client socket to the threadPool
-                threadPool.add(new Connection(client));//make this a if statement
-            } catch (Exception e) {
-                System.err.println("Exception the the EchoServer Class. Exception:" + e);
-            }
+        //runs for ever waiting on clients to connect
+        while (true) try {
+            //if a client connects to the server, then the client object is created from it
+            Socket client = serverSocket.accept();//accept returns client object
+            threadPool.add(new Connection(client)); //adding client socket to the threadPool
+        } catch (Exception e) {
+            System.err.println("Exception the the EchoServer Class. Exception:" + e);
         }
     }
 
+    /**
+     * Method simply returns the port, with represents the server port
+     * @return <code>int</code> represents the server port as an integer
+     */
     public static int getPort() {
         return PORT;
     }
